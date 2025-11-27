@@ -77,9 +77,9 @@ export function connectMutationKey({ chainId }: { chainId: string }) {
 export function connectMutationFn({
   connect,
 }: {
-  connect: (args?: ConnectVariables) => Promise<void> | void;
+  connect: (args: ConnectVariables) => Promise<void> | void;
 }) {
   return async (variables?: ConnectVariables) => {
-    return await connect(variables);
+    return await connect(variables ?? {});
   };
 }

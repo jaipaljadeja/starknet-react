@@ -1,7 +1,12 @@
-import type { RpcMessage, RpcTypeToMessageMap } from "@starknet-io/types-js";
+import type { RpcTypeToMessageMap } from "@starknet-io/types-js";
+import {
+  type RequestArgs,
+  type RequestMessageTypes,
+  type RequestResult,
+  walletRequestMutationFn,
+  walletRequestMutationKey,
+} from "@starknet-start/query";
 import { useCallback } from "react";
-
-import type { Connector } from "../connectors/base";
 import { useStarknet } from "../context/starknet";
 import {
   type UseMutationProps,
@@ -9,9 +14,7 @@ import {
   useMutation,
 } from "../query";
 
-import type { RequestMessageTypes, RequestArgs, RequestResult } from "@starknet-start/query";
-
-
+export type { RequestArgs, RequestResult, RequestMessageTypes };
 
 type MutationResult<T extends RequestMessageTypes> = UseMutationResult<
   RpcTypeToMessageMap[T]["result"],

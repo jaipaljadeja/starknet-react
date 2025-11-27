@@ -9,9 +9,9 @@ import { useNetwork } from "./use-network";
 import { useProvider } from "./use-provider";
 
 export type UseStarkAddressProps = UseQueryProps<
-  string,
+  Address,
   Error,
-  string,
+  Address,
   ReturnType<typeof starkAddressQueryKey>
 > & {
   /** Stark name. */
@@ -20,7 +20,7 @@ export type UseStarkAddressProps = UseQueryProps<
   contract?: Address;
 };
 
-export type UseStarkAddressResult = UseQueryResult<string, Error>;
+export type UseStarkAddressResult = UseQueryResult<Address, Error>;
 
 /**
  * Hook to get the address associated to a stark name.

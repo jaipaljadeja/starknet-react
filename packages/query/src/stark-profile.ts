@@ -1,3 +1,4 @@
+import type { Address } from "@starknet-start/chains";
 import { CairoCustomEnum, cairo, hash, shortString } from "starknet";
 
 export type StarkProfileQueryKeyParams = {
@@ -27,12 +28,12 @@ type MulticallContract = {
 };
 
 export type StarknetIdContracts = {
-  identity: string;
-  naming: string;
-  verifier: string;
-  verifier_pop: string;
-  verifier_pfp: string;
-  multicall: string;
+  identity: Address;
+  naming: Address;
+  verifier: Address;
+  verifier_pop: Address;
+  verifier_pfp: Address;
+  multicall: Address;
 };
 
 export const STARKNET_ID_CONTRACTS: Record<string, StarknetIdContracts> = {
@@ -116,7 +117,7 @@ export function starkProfileQueryFn({
           execution: staticExecution(),
           to: hardcoded(naming),
           selector: hardcoded(hash.getSelectorFromName("address_to_domain")),
-          calldata: [hardcoded(address), hardcoded(0)],
+          calldata: [hardcoded(address), hardcoded("0")],
         },
         {
           execution: staticExecution(),
@@ -285,9 +286,9 @@ function decodeSocials({
 function decodeVerifierData(data: bigint) {
   if (data === BigInt(0)) return undefined;
 
-  const cairoStr = cairo.tuple(cairo.shortString, cairo.shortString);
-  const decoded = cairoStr.deserialize(data);
-  return shortString.decodeShortString(decoded[0]);
+  // TODO: check if this is a correct way, as the old code was using older version of starknet.js and things were deprecated
+  const decoded = shortString.decodeShortString(numToHex(data));
+  return decoded === "" ? undefined : decoded;
 }
 
 function hardcoded(value: string) {
@@ -315,7 +316,7 @@ function arrayReference(responseIndex: number, calldataIndex: number) {
 }
 
 function staticExecution() {
-  return CairoCustomEnum.fromVariants({
+  return new CairoCustomEnum({
     Static: {},
   });
 }
@@ -325,10 +326,10 @@ function notEqual(
   calldataIndex: number,
   expected: number,
 ) {
-  return CairoCustomEnum.fromVariants({
+  return new CairoCustomEnum({
     NotEqual: {
       arguments_indices: {
-        calldata_index,
+        calldata_index: calldataIndex,
         response_index: responseIndex,
       },
       expected_result: expected,

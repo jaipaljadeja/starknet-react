@@ -1,9 +1,5 @@
 import type { Address } from "@starknet-start/chains";
-import {
-  type BalanceContract,
-  balanceQueryFn,
-  balanceQueryKey,
-} from "@starknet-start/query";
+import { balanceQueryFn, balanceQueryKey } from "@starknet-start/query";
 import { useMemo } from "react";
 import { type BlockNumber, BlockTag } from "starknet";
 import { type UseQueryProps, type UseQueryResult, useQuery } from "../query";
@@ -56,12 +52,10 @@ export function useBalance({
   const { chain } = useNetwork();
   const token = token_ ?? chain.nativeCurrency.address;
 
-  const { contract: contract_ } = useContract({
+  const { contract } = useContract({
     abi: balanceABIFragment,
     address: token,
   });
-
-  const contract = contract_ as BalanceContract | undefined;
 
   const queryKey_ = useMemo(
     () => balanceQueryKey({ chain, token, address, blockIdentifier }),
