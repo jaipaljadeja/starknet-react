@@ -1,14 +1,12 @@
-import type { Abi } from "abi-wan-kanabi";
-import { useMemo } from "react";
-import { Contract } from "starknet";
-
-import { useStarknet } from "../context/starknet";
 import type {
   StarknetTypedContract,
   UseContractArgs,
   UseContractResult,
 } from "@starknet-start/query";
-
+import type { Abi } from "abi-wan-kanabi";
+import { useMemo } from "react";
+import { Contract } from "starknet";
+import { useStarknet } from "../context/starknet";
 
 /**
  * Hook to bind a `Contract` instance.

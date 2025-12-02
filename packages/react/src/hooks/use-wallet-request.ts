@@ -39,7 +39,7 @@ export type UseWalletRequestResult<T extends RequestMessageTypes> = Omit<
 export function useWalletRequest<T extends RequestMessageTypes>(
   props: UseWalletRequestProps<T>,
 ): UseWalletRequestResult<T> {
-  const { connector } = useStarknet();
+  const { connected: connector } = useStarknet();
 
   const { type, params, ...rest } = props;
 

@@ -1,6 +1,5 @@
+import type { WalletWithStarknetFeatures } from "@starknet-io/get-starknet-core";
 import { useCallback } from "react";
-
-import type { Connector } from "../connectors/base";
 import { useStarknet } from "../context/starknet";
 import {
   type UseMutationProps,
@@ -8,7 +7,7 @@ import {
   useMutation,
 } from "../query";
 
-export type ConnectVariables = { connector?: Connector };
+export type ConnectVariables = { connector?: WalletWithStarknetFeatures };
 
 type MutationResult = UseMutationResult<void, Error, ConnectVariables>;
 
@@ -20,11 +19,11 @@ export type UseConnectResult = Omit<
   "mutate" | "mutateAsync"
 > & {
   /** Current connector. */
-  connector?: Connector;
+  connector?: WalletWithStarknetFeatures;
   /** Connectors available for the current chain. */
-  connectors: Connector[];
+  connectors: WalletWithStarknetFeatures[];
   /** Connector waiting approval for connection. */
-  pendingConnector?: Connector;
+  pendingConnector?: WalletWithStarknetFeatures;
   /** Connect to a new connector. */
   connect: (args?: ConnectVariables) => void;
   /** Connect to a new connector. */
@@ -41,11 +40,27 @@ export type UseConnectResult = Omit<
  * ```
  */
 export function useConnect(props: UseConnectProps = {}): UseConnectResult {
-  const { connector, connectors, connect: connect_, chain } = useStarknet();
+  const {
+    connected: connector,
+    injectedWallets,
+    extraWallets,
+    connect: connect_,
+    chain,
+  } = useStarknet();
+
+  const connectWrapper = useCallback(
+    async (args: ConnectVariables): Promise<void> => {
+      if (!args.connector) {
+        throw new Error("Connector is required");
+      }
+      await connect_(args.connector);
+    },
+    [connect_],
+  );
 
   const { mutate, mutateAsync, variables, ...result } = useMutation({
     mutationKey: connectMutationKey({ chainId: chain.name }),
-    mutationFn: connectMutationFn({ connect: connect_ }),
+    mutationFn: connectMutationFn({ connect: connectWrapper }),
     ...props,
   });
 
@@ -61,7 +76,7 @@ export function useConnect(props: UseConnectProps = {}): UseConnectResult {
 
   return {
     connector,
-    connectors,
+    connectors: [...injectedWallets, ...extraWallets],
     pendingConnector: variables?.connector,
     connect,
     connectAsync,
